@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>cn.sstool</groupId>
 		<artifactId>sstool-parent</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.2</version>
 	</parent>
 
 	<artifactId>sstool-all</artifactId>
