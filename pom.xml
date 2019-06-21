@@ -6,9 +6,9 @@
 
 	<packaging>pom</packaging>
 
-	<groupId>cn.sstool</groupId>
+	<groupId>com.github.shaohj</groupId>
 	<artifactId>sstool-parent</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.0</version>
 	<name>sstool</name>
 	<description>Java拓展工具方法</description>
 	<url>https://github.com/shaohj/sstool</url>

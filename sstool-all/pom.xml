@@ -5,9 +5,9 @@
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>cn.sstool</groupId>
+		<groupId>com.github.shaohj</groupId>
 		<artifactId>sstool-parent</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>sstool-all</artifactId>
@@ -17,12 +17,12 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>cn.sstool</groupId>
+			<groupId>com.github.shaohj</groupId>
 			<artifactId>sstool-core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>cn.sstool</groupId>
+			<groupId>com.github.shaohj</groupId>
 			<artifactId>sstool-poi-expand</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
