@@ -1,15 +1,16 @@
 package com.github.shaohj.sstool.poiexpand.common.bean.write.tag;
 
-import com.github.shaohj.sstool.core.util.EmptyUtil;
+import com.github.shaohj.sstool.core.util.ExprUtil;
+import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.core.util.StrUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.CellData;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.consts.SaxExcelConst;
 import com.github.shaohj.sstool.poiexpand.common.consts.TagEnum;
-import com.github.shaohj.sstool.core.util.ExprUtil;
 import com.github.shaohj.sstool.poiexpand.common.util.write.TagUtil;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.DynaProperty;
@@ -31,6 +32,7 @@ import java.util.StringTokenizer;
  * @author：felix.shao
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @Slf4j
 public class EachTagData extends TagData{
@@ -70,7 +72,7 @@ public class EachTagData extends TagData{
      */
     private void initReadRowData(Map<String, Object> params){
         Map<String, CellData> cellDataMap = readRowData.getCellDatas();
-        if (!EmptyUtil.isEmpty(cellDataMap)){
+        if (!MapUtil.isEmpty(cellDataMap)){
             CellData eachCellData = cellDataMap.get("0");
 
             Object iteratorObj = ExprUtil.getExprStrValue(params, expr);

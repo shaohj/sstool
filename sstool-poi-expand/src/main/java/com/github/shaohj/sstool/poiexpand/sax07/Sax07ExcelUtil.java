@@ -3,64 +3,41 @@ package com.github.shaohj.sstool.poiexpand.sax07;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.ReadSheetData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.util.write.SaxWriteUtil;
+import com.github.shaohj.sstool.poiexpand.sax07.template.Sax07ExcelTemplateReader;
+import com.github.shaohj.sstool.poiexpand.sax07.template.Sax07ExcelTemplateWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 编  号：
  * 名  称：Sax07ExcelUtil
  * 描  述：
- * 完成日期：2019/01/28 23:13
- *
+ * 完成日期：2019/6/29 11:12
  * @author：felix.shao
  */
 @Slf4j
 public class Sax07ExcelUtil {
 
     /**
-     * 根据excel模板导出excel，没有大数据分页标签
-     * @param tempFileName 模板文件名
-     * @param params javabean参数
-     * @param out 输出文件流
+     * 根据excel2007模板导出excel
+     * @param param 导出参数
      */
-    public static void export(String tempFileName, Map<String, Object> params, OutputStream out) {
-        List<Sax07ExcelPageWriteService> sax07ExcelPageWriteServices = new ArrayList<>(0);
-        export(tempFileName, params, out, sax07ExcelPageWriteServices);
-    }
+    public static void export(Sax07ExcelExportParam param) {
+        Sax07ExcelExportParam.valid(param);
+        if (null == param.getSax07ExcelPageWriteServices()){
+            param.setSax07ExcelPageWriteServices(new ArrayList<>(0));
+        }
 
-    /**
-     * 根据excel模板导出excel，有一个大数据分页标签
-     * @param tempFileName 模板文件名
-     * @param params javabean参数
-     * @param out 输出文件流
-     * @param sax07ExcelPageWriteService 一个大数据分页标签处理Service
-     */
-    public static void export(String tempFileName, Map<String, Object> params, OutputStream out, Sax07ExcelPageWriteService sax07ExcelPageWriteService) {
-        List<Sax07ExcelPageWriteService> sax07ExcelPageWriteServices = new ArrayList<>(1);
-        sax07ExcelPageWriteServices.add(sax07ExcelPageWriteService);
-        export(tempFileName, params, out, sax07ExcelPageWriteServices);
-    }
-
-    /**
-     * 根据excel模板导出excel，有多个大数据分页标签
-     * @param tempFileName 模板文件名
-     * @param params javabean参数
-     * @param out 输出文件流
-     * @param sax07ExcelPageWriteServices 多个大数据分页标签处理Services
-     */
-    public static void export(String tempFileName, Map<String, Object> params, OutputStream out, List<Sax07ExcelPageWriteService> sax07ExcelPageWriteServices) {
         // 打开工作簿 并进行初始化
-        XSSFWorkbook readWb = Sax07ExcelWorkbookUtil.openWorkbookByProPath(tempFileName);
+        XSSFWorkbook readWb = Sax07ExcelTemplateReader.openWorkbook(true, param.getTempFileName());
 
         // 读取模板工作簿内容
-        List<ReadSheetData> readReadSheetData = Sax07ExcelReadUtil.readSheetData(readWb);
+        List<ReadSheetData> readReadSheetData = Sax07ExcelTemplateReader.readSheetData(readWb);
 
         // 写入模板内容
         List<WriteSheetData> writeSheetDatas = SaxWriteUtil.parseSheetData(readReadSheetData);
@@ -68,11 +45,10 @@ public class Sax07ExcelUtil {
         //创建缓存的输出文件工作簿
         SXSSFWorkbook writeWb = new SXSSFWorkbook(100);
 
-        Sax07ExcelWriteUtil.writeSheetData(writeWb, params, writeSheetDatas, sax07ExcelPageWriteServices);
-
         try {
+            Sax07ExcelTemplateWriter.writeSheetData(writeWb, param.getParams(), writeSheetDatas, param.getSax07ExcelPageWriteServices());
             //输出文件
-            writeWb.write(out);
+            writeWb.write(param.getOutputStream());
         } catch (IOException e) {
             log.info("导出excel时错误", e);
         } finally {

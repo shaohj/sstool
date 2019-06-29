@@ -4,6 +4,7 @@ import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.util.write.TagUtil;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -21,6 +22,7 @@ import java.util.Map;
  * @author：felix.shao
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class ConstTagData extends TagData{
 

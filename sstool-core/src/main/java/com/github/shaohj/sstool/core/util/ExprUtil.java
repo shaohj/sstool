@@ -18,11 +18,23 @@ import java.util.*;
 @Slf4j
 public class ExprUtil {
 
+    /**
+     * 表达式开始限定语法
+     */
    public static final String EXPR_START = "${";
 
+    /**
+     * 表达式结束限定语法
+     */
     public static final String EXPR_END = "}";
 
-    public static Object parseTempStr(final Map<String, Object> params, Object value){
+    /**
+     * 根据java对象动态替换表达式里面的值
+     * @param params map参数. eq: Map<String, Object> map = new HashMap<>(); map.put("name", "java"); map.put("six", "6");
+     * @param value 具体的表达式. eq: hello ${name}, 1 2 3 4 5 ${six} 7, again ${name}.
+     * @return 表达式动态翻译后的值. eq: hello java, 1 2 3 4 5 6 7, again java.
+     */
+    public static Object parseTempStr(Map<String, Object> params, Object value){
         if(null == value || !"java.lang.String".equals(value.getClass().getName())){
             return value;
         }
@@ -30,9 +42,9 @@ public class ExprUtil {
     }
 
     /**
-     * 根据java对象动态替换表达式里面的值
-     * @param context
-     * @param exprStr 含有表达式的字符串，格式可以为*${model[${index}]}，*${model}，注意目前嵌套表达式还未支持，后续可拓展支持
+     * 根据java对象动态替换表达式里面的值.
+     * @param context javabean
+     * @param exprStr 含有表达式的字符串，格式可以为"*${model[${index}]}，*${model}"，注意目前嵌套表达式还未支持，后续可拓展支持
      */
     public static Object getExprStrValue(Object context, String exprStr){
         /** valueCount为exprStr中临时存放表达式的数量，exprCount为已处理的表达式数量 */
@@ -104,7 +116,7 @@ public class ExprUtil {
     /**
      * 根据java对象动态替换表达式里面的值
      * @param context
-     * @param expr 只有表达式的字符串，格式可以为${model[${index}]}，${model}，注意目前嵌套表达式还未支持，后续可拓展支持
+     * @param expr 只有表达式的字符串，格式可以为"${model[${index}]}，${model}"，注意目前嵌套表达式还未支持，后续可拓展支持
      */
     public static Object getExprValue(Object context, String expr){
         int startIdx = expr.indexOf(EXPR_START);

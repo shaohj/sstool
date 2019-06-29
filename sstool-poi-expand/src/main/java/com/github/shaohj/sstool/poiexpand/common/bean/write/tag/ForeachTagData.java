@@ -6,6 +6,7 @@ import com.github.shaohj.sstool.core.util.ExprUtil;
 import com.github.shaohj.sstool.core.util.StrUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -22,6 +23,7 @@ import java.util.StringTokenizer;
  * @author：felix.shao
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ForeachTagData extends TagData {
 
     private String iteratorObjKey;

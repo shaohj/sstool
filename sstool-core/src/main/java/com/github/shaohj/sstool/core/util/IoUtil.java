@@ -10,8 +10,7 @@ package com.github.shaohj.sstool.core.util;
 public class IoUtil {
 
 	/**
-	 * 关闭<br>
-	 * 关闭失败不会抛出异常
+	 * 静默关闭
 	 *
 	 * @param closeable 被关闭的对象
 	 */

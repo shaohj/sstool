@@ -31,13 +31,4 @@ public class EmptyUtil {
         return collection == null || collection.isEmpty();
     }
 
-    /**
-     * map是否为空
-     * @param map
-     * @return
-     */
-    public static boolean isEmpty(Map<?, ?> map) {
-        return null == map || map.isEmpty();
-    }
-
 }

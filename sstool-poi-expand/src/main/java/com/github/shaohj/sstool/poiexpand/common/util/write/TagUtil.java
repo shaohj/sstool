@@ -1,6 +1,6 @@
 package com.github.shaohj.sstool.poiexpand.common.util.write;
 
-import com.github.shaohj.sstool.core.util.EmptyUtil;
+import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.consts.TagEnum;
@@ -62,7 +62,7 @@ public class TagUtil {
             final Row writeRow = writeSheet.createRow(writeSheetData.getCurWriteRowNumAndIncrement());
             writeRow.setHeight(rowData.getHeight());
             writeRow.setHeightInPoints(rowData.getHeightInPoints());
-            if(EmptyUtil.isEmpty(rowData.getCellDatas())){
+            if(MapUtil.isEmpty(rowData.getCellDatas())){
                 return;
             }
             rowData.getCellDatas().forEach((readCellNum, cellData) -> SaxWriteUtil.writeCellData(writeWb, writeRow, rowData.getRowNum(), cellData, params, writeCellStyleCache));

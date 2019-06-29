@@ -1,26 +1,60 @@
-package com.github.shaohj.sstool.poiexpand.sax07;
+package com.github.shaohj.sstool.poiexpand.sax07.template;
 
+import com.github.shaohj.sstool.core.util.IoUtil;
+import com.github.shaohj.sstool.core.util.MapUtil;
+import com.github.shaohj.sstool.core.util.StrUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.CellData;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.ReadSheetData;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
-import com.github.shaohj.sstool.core.util.CalculationUtil;
+import com.github.shaohj.sstool.poiexpand.common.exception.PoiExpandException;
 import com.github.shaohj.sstool.poiexpand.common.util.ExcelCommonUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 编  号：
- * 名  称：Sax07ExcelReadUtil
- * 描  述：
- * 完成日期：2019/01/31 00:02
- *
+ * 名  称：Sax07ExcelTemplateReader
+ * 描  述：excle2007读取模板工具类
+ * 完成日期：2019/6/29 11:11
  * @author：felix.shao
  */
-public class Sax07ExcelReadUtil {
+public class Sax07ExcelTemplateReader {
+
+    /**
+     * 根据模板文件名打开workbook.
+     * @param isClassPath 是否为class路径.true:是;false:否
+     * @param fileName 文件路径，支持class路径和绝对路径
+     * @return
+     */
+    public static XSSFWorkbook openWorkbook(boolean isClassPath, String fileName) {
+        String fileSuffix = StrUtil.getStringSuffix(fileName);
+        if (!"xlsx".equals(fileSuffix)) {
+            throw new IllegalArgumentException("poi缓存导出只支持xlsx,程序同步,支持支xlsx导出");
+        }
+        InputStream in = null;
+        try {
+            if(isClassPath) {
+                in = Sax07ExcelTemplateReader.class.getClassLoader().getResourceAsStream(fileName);
+            } else {
+                in = new FileInputStream(fileName);
+            }
+            return new XSSFWorkbook(in);
+        } catch (Exception e) {
+            throw new PoiExpandException("File" + fileName + "not found" + e.getMessage());
+        } finally {
+            IoUtil.close(in);
+        }
+    }
 
     /**
      * 读取XSSFWorkbook的Sheet，生成SheetData数据
@@ -52,8 +86,15 @@ public class Sax07ExcelReadUtil {
         return readSheetDatas;
     }
 
+    /**
+     * 读取XSSFWorkbook的Row，生成RowData数据
+     * @param readSheet
+     * @param firstRowNum
+     * @param lastRowNum
+     * @return
+     */
     public static Map<String, RowData> readRowData(Sheet readSheet, int firstRowNum, int lastRowNum){
-        Map<String, RowData> rowDatas = new LinkedHashMap<>(CalculationUtil.calMapCapacity(lastRowNum - firstRowNum + 1));
+        Map<String, RowData> rowDatas = new LinkedHashMap<>(MapUtil.calMapCapacity(lastRowNum - firstRowNum + 1));
         int curRowNum = firstRowNum;
 
         while (curRowNum <= lastRowNum) {
@@ -82,8 +123,15 @@ public class Sax07ExcelReadUtil {
         return rowDatas;
     }
 
+    /**
+     * 读取XSSFWorkbook的Cell，生成CellData数据
+     * @param readRow
+     * @param firstCellNum
+     * @param lastCellNum
+     * @return
+     */
     public static Map<String, CellData> readCellData(Row readRow, int firstCellNum, int lastCellNum){
-        Map<String, CellData> cellDatas = new LinkedHashMap<>(CalculationUtil.calMapCapacity(lastCellNum - firstCellNum + 1));
+        Map<String, CellData> cellDatas = new LinkedHashMap<>(MapUtil.calMapCapacity(lastCellNum - firstCellNum + 1));
 
         if(-1 == firstCellNum) {
             return cellDatas;

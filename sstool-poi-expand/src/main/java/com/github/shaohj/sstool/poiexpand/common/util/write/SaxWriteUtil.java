@@ -7,7 +7,7 @@ import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.tag.*;
 import com.github.shaohj.sstool.poiexpand.common.consts.TagEnum;
-import com.github.shaohj.sstool.core.util.CalculationUtil;
+import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.poiexpand.common.util.ExcelCommonUtil;
 import com.github.shaohj.sstool.core.util.ExprUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -61,11 +61,11 @@ public class SaxWriteUtil {
      * @return
      */
     public static Map<String, TagData> parseRowData(Map<String, RowData> rowDatas){
-        if(EmptyUtil.isEmpty(rowDatas)){
+        if(MapUtil.isEmpty(rowDatas)){
             return new HashMap<>(0);
         }
 
-        final Map<String, TagData> writeBlockMap = new LinkedHashMap<>(CalculationUtil.calMapCapacity(rowDatas.size()));
+        final Map<String, TagData> writeBlockMap = new LinkedHashMap<>(MapUtil.calMapCapacity(rowDatas.size()));
 
         geneTreeWriteBlock(0,rowDatas.size() - 1, rowDatas, null, writeBlockMap);
 
@@ -143,7 +143,7 @@ public class SaxWriteUtil {
     }
 
     public static String getFirstCellValueStr(RowData rowData){
-        String expr = null == rowData || EmptyUtil.isEmpty(rowData.getCellDatas()) || null == rowData.getCellDatas().get("0") ?
+        String expr = null == rowData || MapUtil.isEmpty(rowData.getCellDatas()) || null == rowData.getCellDatas().get("0") ?
                 null : String.valueOf(rowData.getCellDatas().get("0").getValue());
         return expr;
     };
