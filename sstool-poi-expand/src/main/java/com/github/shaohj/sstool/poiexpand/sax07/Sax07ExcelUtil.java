@@ -43,7 +43,8 @@ public class Sax07ExcelUtil {
         List<WriteSheetData> writeSheetDatas = SaxWriteUtil.parseSheetData(readReadSheetData);
 
         //创建缓存的输出文件工作簿
-        SXSSFWorkbook writeWb = new SXSSFWorkbook(100);
+        int rowAccessWindowSize = 0 == param.getRowAccessWindowSize() ? 1000 : param.getRowAccessWindowSize();
+        SXSSFWorkbook writeWb = new SXSSFWorkbook(rowAccessWindowSize);
 
         try {
             Sax07ExcelTemplateWriter.writeSheetData(writeWb, param.getParams(), writeSheetDatas, param.getSax07ExcelPageWriteServices());

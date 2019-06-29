@@ -50,6 +50,7 @@ public class Sax07ExcelUtilTest {
                         .tempIsClassPath(true)
                         .tempFileName(tempPath + "each_temp.xlsx")
                         .params(params)
+                        .rowAccessWindowSize(1000)
                         .outputStream(fos).build();
 
                 Sax07ExcelUtil.export(param);
@@ -82,6 +83,7 @@ public class Sax07ExcelUtilTest {
                         .tempIsClassPath(true)
                         .tempFileName(tempPath + "each_temp.xlsx")
                         .params(params)
+                        .rowAccessWindowSize(1000)
                         .outputStream(fos).build();
 
                 Sax07ExcelUtil.export(param);
@@ -116,6 +118,7 @@ public class Sax07ExcelUtilTest {
                         .tempIsClassPath(true)
                         .tempFileName(tempPath + "foreach_temp.xlsx")
                         .params(params)
+                        .rowAccessWindowSize(1000)
                         .outputStream(fos).build();
                 Sax07ExcelUtil.export(param);
             } catch (Exception e) {
@@ -150,6 +153,7 @@ public class Sax07ExcelUtilTest {
                         .tempIsClassPath(true)
                         .tempFileName(tempPath + "nest_if_foreach_temp.xlsx")
                         .params(params)
+                        .rowAccessWindowSize(1000)
                         .outputStream(fos).build();
                 Sax07ExcelUtil.export(param);
             } catch (Exception e) {
@@ -196,6 +200,7 @@ public class Sax07ExcelUtilTest {
                         .tempIsClassPath(true)
                         .tempFileName(tempPath + "pageforeach_temp.xlsx")
                         .params(params)
+                        .rowAccessWindowSize(1000)
                         .sax07ExcelPageWriteServices(Arrays.asList(sax07ExcelPageWriteService))
                         .outputStream(fos).build();
 

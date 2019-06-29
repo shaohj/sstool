@@ -29,6 +29,9 @@ public class Sax07ExcelExportParam {
     /** 模板文件名称 */
     private String tempFileName;
 
+    /** 导出的缓冲数据大小，建议是1000 */
+    private int rowAccessWindowSize;
+
     /** 导出java参数 */
     private Map<String, Object> params;
 
