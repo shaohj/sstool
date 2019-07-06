@@ -17,6 +17,7 @@
 		<module>sstool-all</module>
 		<module>sstool-core</module>
 		<module>sstool-poi-expand</module>
+		<module>sstool-word-expand</module>
 	</modules>
 
 	<properties>

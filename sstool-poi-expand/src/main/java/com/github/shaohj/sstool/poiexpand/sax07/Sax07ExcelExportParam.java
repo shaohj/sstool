@@ -26,7 +26,7 @@ public class Sax07ExcelExportParam {
     /** 模板文件路径是否为class路径.true:是;false:否 */
     private boolean tempIsClassPath;
 
-    /** 模板文件名称 */
+    /** 模板文件相对或绝对路径及名称 */
     private String tempFileName;
 
     /** 导出的缓冲数据大小，建议是1000 */

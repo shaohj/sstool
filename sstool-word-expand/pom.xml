@@ -9,13 +9,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sstool-poi-expand</artifactId>
+    <artifactId>sstool-word-expand</artifactId>
 
     <properties>
-        <!-- versions -->
-        <poi.version>3.17</poi.version>
-        <ooxml-schemas.version>1.4</ooxml-schemas.version>
-        <xercesImpl.version>2.12.0</xercesImpl.version>
+        <freemarker.version>2.3.28</freemarker.version>
+        <ant.version>1.10.1</ant.version>
     </properties>
 
     <dependencies>
@@ -39,28 +37,19 @@
             <version>${commons-beanutils.version}</version>
             <optional>true</optional>
         </dependency>
-        
-        <!-- poi clone 样式时必须 -->
+
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>ooxml-schemas</artifactId>
-            <version>${ooxml-schemas.version}</version>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>${freemarker.version}</version>
             <optional>true</optional>
         </dependency>
 
-        <!-- xlsx必须的依赖 -->
+        <!-- apache ant zip use-->
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${poi.version}</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- poi 读取大批量数据时需要引用该jar依赖 -->
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>${xercesImpl.version}</version>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>${ant.version}</version>
             <optional>true</optional>
         </dependency>
 
@@ -80,4 +69,5 @@
         </dependency>
 
     </dependencies>
+
 </project>
