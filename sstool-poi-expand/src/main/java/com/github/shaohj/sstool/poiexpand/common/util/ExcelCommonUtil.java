@@ -3,6 +3,12 @@ package com.github.shaohj.sstool.poiexpand.common.util;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTMergeCell;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTMergeCells;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorksheet;
 
 import java.util.Date;
 
@@ -85,6 +91,16 @@ public class ExcelCommonUtil {
                 writeCell.setCellValue(value.toString());
             }
         }
+    }
+
+    public static void addMergeRegion(SXSSFWorkbook sxssfWorkbok, String sheetName, CellRangeAddress region, int mergeCellsCount) {
+        XSSFSheet sheet = sxssfWorkbok.getXSSFWorkbook().getSheet(sheetName);
+        CTWorksheet ctWorksheet = sheet.getCTWorksheet();
+
+        CTMergeCells ctMergeCells = mergeCellsCount > 0 ?ctWorksheet.getMergeCells():ctWorksheet.addNewMergeCells();
+        CTMergeCell ctMergeCell = ctMergeCells.addNewMergeCell();
+
+        ctMergeCell.setRef(region.formatAsString());
     }
 
 }

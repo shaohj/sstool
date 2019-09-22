@@ -33,6 +33,9 @@ public class WriteSheetData {
     /** 需要写入的数据块，块以TagData未单位 */
     private Map<String, TagData> writeTagDatas;
 
+    /** 合并单元格数量计数 */
+    private int mergeCellsCount;
+
     /**
      * 根据读取的模板内容生成写入模板内容时使用。<br />
      * SXSSFSheet是一行行的写入数据，我们根据读取的模板生成需要写入的数据模板。

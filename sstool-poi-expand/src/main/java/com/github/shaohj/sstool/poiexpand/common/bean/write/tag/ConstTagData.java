@@ -3,6 +3,7 @@ package com.github.shaohj.sstool.poiexpand.common.bean.write.tag;
 import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
+import com.github.shaohj.sstool.poiexpand.common.util.ExcelCommonUtil;
 import com.github.shaohj.sstool.poiexpand.common.util.write.TagUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +59,13 @@ public class ConstTagData extends TagData{
         if(!MapUtil.isEmpty(allCellRangeAddress)){
             allCellRangeAddress.forEach((idx, craddr) -> {
                 //起始行,结束行,起始列,结束列
-                CellRangeAddress callRangeAddressInfo = new CellRangeAddress(curWriteRowNum + craddr.getRelaStartRow(), curWriteRowNum + craddr.getRelaEndRow(),
+                CellRangeAddress region = new CellRangeAddress(curWriteRowNum + craddr.getRelaStartRow(), curWriteRowNum + craddr.getRelaEndRow(),
                         craddr.getStartCol(),craddr.getEndCol());
                 //addMergedRegionUnsafe比addMergedRegion方法少异常检查，大大优化导出时间
-                writeSheet.addMergedRegionUnsafe(callRangeAddressInfo);
+//                writeSheet.addMergedRegionUnsafe(region);
+                // 使用下面方式在原有基础上去掉了返回值，原有返回值中有锁等一些操作，缩短了一些导出时间
+                ExcelCommonUtil.addMergeRegion((SXSSFWorkbook)writeWb, writeSheet.getSheetName(), region, writeSheetData.getMergeCellsCount());
+                writeSheetData.setMergeCellsCount(writeSheetData.getMergeCellsCount() + 1);
             });
         }
 
