@@ -59,7 +59,8 @@ public class ConstTagData extends TagData{
                 //起始行,结束行,起始列,结束列
                 CellRangeAddress callRangeAddressInfo = new CellRangeAddress(curWriteRowNum + craddr.getRelaStartRow(), curWriteRowNum + craddr.getRelaEndRow(),
                         craddr.getStartCol(),craddr.getEndCol());
-                writeSheet.addMergedRegion(callRangeAddressInfo);
+                //addMergedRegionUnsafe比addMergedRegion方法少异常检查，大大优化导出时间
+                writeSheet.addMergedRegionUnsafe(callRangeAddressInfo);
             });
         }
 

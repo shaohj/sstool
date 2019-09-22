@@ -166,7 +166,7 @@ public class Sax07ExcelUtilTest {
     public void exportPageForeachTest(){
         int num = 4;
         CostTimeUtil.apply(null, "导出" + num + "条数据,耗费时间为{}毫秒", s -> {
-            int pageSize = 10;
+            int pageSize = 100;
             int totalPageNum = num % pageSize == 0 ? num/pageSize : num/pageSize + 1;
 
             String tempPath = "xlsx/";
@@ -188,6 +188,7 @@ public class Sax07ExcelUtilTest {
                             details.add(new ModelTest("user" + j, "world", 144.342));
                         }
                         pageParams.put("list", details);
+                        log.info("正在导出第{}页数据,一共{}页", i, totalPageNum);
                         tagData.writeTagData(writeWb, writeSheet, writeSheetData, pageParams, writeCellStyleCache);
                     }
                 }
@@ -213,9 +214,9 @@ public class Sax07ExcelUtilTest {
 
     @Test
     public void exportPageForeachMergeTest(){
-        int num = 4;
+        int num = 10000;
         CostTimeUtil.apply(null, "导出" + num + "条数据,耗费时间为{}毫秒", s -> {
-            int pageSize = 10;
+            int pageSize = 1000;
             int totalPageNum = num % pageSize == 0 ? num/pageSize : num/pageSize + 1;
 
             String tempPath = "xlsx/";
@@ -237,6 +238,7 @@ public class Sax07ExcelUtilTest {
                             details.add(new ModelTest("user" + j, "world", 144.342));
                         }
                         pageParams.put("list", details);
+                        log.info("正在导出第{}页数据,一共{}页", i, totalPageNum);
                         tagData.writeTagData(writeWb, writeSheet, writeSheetData, pageParams, writeCellStyleCache);
                     }
                 }
@@ -249,7 +251,7 @@ public class Sax07ExcelUtilTest {
                         .tempIsClassPath(true)
                         .tempFileName(tempPath + "pageforeach_merge_temp.xlsx")
                         .params(params)
-                        .rowAccessWindowSize(1000)
+                        .rowAccessWindowSize(100)
                         .sax07ExcelPageWriteServices(Arrays.asList(sax07ExcelPageWriteService))
                         .outputStream(fos).build();
 
