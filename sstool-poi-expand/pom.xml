@@ -5,7 +5,7 @@
     <parent>
         <artifactId>sstool-parent</artifactId>
         <groupId>com.github.shaohj</groupId>
-        <version>1.0.2</version>
+        <version>1.0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -39,7 +39,7 @@
             <version>${commons-beanutils.version}</version>
             <optional>true</optional>
         </dependency>
-        
+
         <!-- poi clone 样式时必须 -->
         <dependency>
             <groupId>org.apache.poi</groupId>
