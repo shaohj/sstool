@@ -1,6 +1,7 @@
 package com.github.shaohj.sstool.poiexpand.common.bean.write;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 编  号：
@@ -11,6 +12,7 @@ import lombok.Data;
  * @author：felix.shao
  */
 @Data
+@NoArgsConstructor
 public class MergeRegionParam {
 
     /** 相对的起始行数 */
@@ -24,5 +26,12 @@ public class MergeRegionParam {
 
     /** 结束列数 */
     private int endCol;
+
+    public MergeRegionParam(int relaStartRow, int relaEndRow, int startCol, int endCol) {
+        this.relaStartRow = relaStartRow;
+        this.relaEndRow = relaEndRow;
+        this.startCol = startCol;
+        this.endCol = endCol;
+    }
 
 }

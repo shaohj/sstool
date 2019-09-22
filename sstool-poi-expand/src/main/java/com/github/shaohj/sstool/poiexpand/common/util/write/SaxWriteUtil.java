@@ -6,8 +6,11 @@ import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.CellData;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.ReadSheetData;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
+import com.github.shaohj.sstool.poiexpand.common.bean.write.MergeRegionParam;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
-import com.github.shaohj.sstool.poiexpand.common.bean.write.tag.*;
+import com.github.shaohj.sstool.poiexpand.common.bean.write.tag.ConstTagData;
+import com.github.shaohj.sstool.poiexpand.common.bean.write.tag.EachTagData;
+import com.github.shaohj.sstool.poiexpand.common.bean.write.tag.TagData;
 import com.github.shaohj.sstool.poiexpand.common.consts.TagEnum;
 import com.github.shaohj.sstool.poiexpand.common.exception.PoiExpandException;
 import com.github.shaohj.sstool.poiexpand.common.util.ExcelCommonUtil;
@@ -15,6 +18,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.*;
 
@@ -123,6 +127,27 @@ public class SaxWriteUtil {
                         constRowDatas.add(rowDatas.get(String.valueOf(i)));
                     }
                     ((ConstTagData) tagData).setReadRowData(constRowDatas);
+
+                    // 合并单元格处理
+                    if(!MapUtil.isEmpty(readSheetData.getAllCellRangeAddress())){
+                        Map<String, MergeRegionParam> allCellRangeAddress = new HashMap<>(2);
+                        for(Map.Entry<String, CellRangeAddress> entry: readSheetData.getAllCellRangeAddress().entrySet()){
+                            String idx = entry.getKey();
+                            CellRangeAddress craddr = entry.getValue();
+                            // 判断合并单元格区域是否在本标签内
+                            if(craddr.getFirstRow() >= curRowNum && craddr.getLastRow() <= curRowEndNum){
+                                MergeRegionParam mergeRegionParam = new MergeRegionParam();
+                                mergeRegionParam.setRelaStartRow(craddr.getFirstRow() - curRowNum);
+                                mergeRegionParam.setRelaEndRow(craddr.getLastRow() - curRowNum);
+                                mergeRegionParam.setStartCol(craddr.getFirstColumn());
+                                mergeRegionParam.setEndCol(craddr.getLastColumn());
+
+                                allCellRangeAddress.put(idx, mergeRegionParam);
+                            }
+                        }
+                        tagData.setAllCellRangeAddress(allCellRangeAddress);
+                    }
+
                     curRowNum = curRowEndNum;
                     break;
                 default:
