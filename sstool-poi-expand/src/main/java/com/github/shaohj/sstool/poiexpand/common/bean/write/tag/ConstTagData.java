@@ -1,5 +1,6 @@
 package com.github.shaohj.sstool.poiexpand.common.bean.write.tag;
 
+import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.util.write.TagUtil;
@@ -8,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 
 import java.util.ArrayList;
@@ -49,7 +51,18 @@ public class ConstTagData extends TagData{
     @Override
     public void writeTagData(Workbook writeWb, SXSSFSheet writeSheet, WriteSheetData writeSheetData,
                              Map<String, Object> params, Map<String, CellStyle> writeCellStyleCache) {
+        int curWriteRowNum = writeSheetData.getCurWriteRowNum();
         TagUtil.writeTagData(writeWb, writeSheet, writeSheetData, readRowData, params, writeCellStyleCache);
+
+        if(!MapUtil.isEmpty(allCellRangeAddress)){
+            allCellRangeAddress.forEach((idx, craddr) -> {
+                //起始行,结束行,起始列,结束列
+                CellRangeAddress callRangeAddressInfo = new CellRangeAddress(curWriteRowNum + craddr.getRelaStartRow(), curWriteRowNum + craddr.getRelaEndRow(),
+                        craddr.getStartCol(),craddr.getEndCol());
+                writeSheet.addMergedRegion(callRangeAddressInfo);
+            });
+        }
+
     }
 
 }
