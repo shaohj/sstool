@@ -12,14 +12,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 编  号：
@@ -78,6 +76,8 @@ public class Sax07ExcelTemplateReader {
             readSheetData.setCellWidths(cellWidths);
 
             Map<String, RowData> readSheetRowDatas = readRowData(readSheet, readSheet.getFirstRowNum(), readSheet.getLastRowNum());
+
+            readSheetData.setAllCellRangeAddress(getSheetMergedRegions(readSheet));
             readSheetData.setRowDatas(readSheetRowDatas);
 
             readSheetDatas.add(readSheetData);
@@ -94,7 +94,8 @@ public class Sax07ExcelTemplateReader {
      * @return
      */
     public static Map<String, RowData> readRowData(Sheet readSheet, int firstRowNum, int lastRowNum){
-        Map<String, RowData> rowDatas = new LinkedHashMap<>(MapUtil.calMapCapacity(lastRowNum - firstRowNum + 1));
+        //存储sheet的rowData数据
+        Map<String, RowData> rowDatas = new LinkedHashMap<>(MapUtil.calMapSize(lastRowNum - firstRowNum + 1));
         int curRowNum = firstRowNum;
 
         while (curRowNum <= lastRowNum) {
@@ -102,16 +103,17 @@ public class Sax07ExcelTemplateReader {
 
             RowData rowData = new RowData();
             rowData.setRowNum(curRowNum);
+            Map<String, CellData> readRowCellDatas = null;
 
             if(null != readRow){
                 //设置行高等属性
                 rowData.setHeight(readRow.getHeight());
                 rowData.setHeightInPoints(readRow.getHeightInPoints());
+                readRowCellDatas = readCellData(readRow, readRow.getFirstCellNum(), readRow.getLastCellNum());
+            } else {
+                rowData.setHeight(new Short("160"));
+                rowData.setHeightInPoints(new Short("20"));
             }
-
-            Map<String, CellData> readRowCellDatas = null != readRow ?
-                    readCellData(readRow, readRow.getFirstCellNum(), readRow.getLastCellNum())
-                    : new LinkedHashMap<>(0);
 
             rowData.setCellDatas(readRowCellDatas);
 
@@ -131,7 +133,7 @@ public class Sax07ExcelTemplateReader {
      * @return
      */
     public static Map<String, CellData> readCellData(Row readRow, int firstCellNum, int lastCellNum){
-        Map<String, CellData> cellDatas = new LinkedHashMap<>(MapUtil.calMapCapacity(lastCellNum - firstCellNum + 1));
+        Map<String, CellData> cellDatas = new LinkedHashMap<>(MapUtil.calMapSize(lastCellNum - firstCellNum + 1));
 
         if(-1 == firstCellNum) {
             return cellDatas;
@@ -164,4 +166,22 @@ public class Sax07ExcelTemplateReader {
         return cellDatas;
     }
 
+    /**
+     * 获取sheet的所有合并单元格
+     * @param readSheet
+     * @return
+     */
+    public static Map<String, CellRangeAddress> getSheetMergedRegions(Sheet readSheet){
+        int mergeRegionNum = readSheet.getNumMergedRegions();
+
+        if(0 == mergeRegionNum){
+            return null;
+        }
+
+        Map<String, CellRangeAddress> cellRangeAddressMap = new HashMap<>(MapUtil.calMapSize(mergeRegionNum));
+        for(int i = 0; i < mergeRegionNum; i++){
+            cellRangeAddressMap.put(String.valueOf(i), readSheet.getMergedRegion(i));
+        }
+        return cellRangeAddressMap;
+    }
 }

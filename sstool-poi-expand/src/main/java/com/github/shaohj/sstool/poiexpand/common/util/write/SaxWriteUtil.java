@@ -1,15 +1,16 @@
 package com.github.shaohj.sstool.poiexpand.common.util.write;
 
 import com.github.shaohj.sstool.core.util.EmptyUtil;
+import com.github.shaohj.sstool.core.util.ExprUtil;
+import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.CellData;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.ReadSheetData;
 import com.github.shaohj.sstool.poiexpand.common.bean.read.RowData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.tag.*;
 import com.github.shaohj.sstool.poiexpand.common.consts.TagEnum;
-import com.github.shaohj.sstool.core.util.MapUtil;
+import com.github.shaohj.sstool.poiexpand.common.exception.PoiExpandException;
 import com.github.shaohj.sstool.poiexpand.common.util.ExcelCommonUtil;
-import com.github.shaohj.sstool.core.util.ExprUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -50,24 +51,25 @@ public class SaxWriteUtil {
         writeSheetData.setSheetNum(readSheetData.getSheetNum());
         writeSheetData.setSheetName(readSheetData.getSheetName());
         writeSheetData.setCellWidths(readSheetData.getCellWidths());
-        writeSheetData.setWriteTagDatas(parseRowData(readSheetData.getRowDatas()));
+        writeSheetData.setWriteTagDatas(parseRowData(readSheetData, readSheetData.getRowDatas()));
 
         return writeSheetData;
     }
 
     /**
      * 将读取的rowDatas判断标签转为写入时的块
+     * @param readSheetData 包含全局合并单元格等信息
      * @param rowDatas
      * @return
      */
-    public static Map<String, TagData> parseRowData(Map<String, RowData> rowDatas){
+    public static Map<String, TagData> parseRowData(ReadSheetData readSheetData, Map<String, RowData> rowDatas){
         if(MapUtil.isEmpty(rowDatas)){
             return new HashMap<>(0);
         }
 
-        final Map<String, TagData> writeBlockMap = new LinkedHashMap<>(MapUtil.calMapCapacity(rowDatas.size()));
+        final Map<String, TagData> writeBlockMap = new LinkedHashMap<>(MapUtil.calMapSize(rowDatas.size()));
 
-        geneTreeWriteBlock(0,rowDatas.size() - 1, rowDatas, null, writeBlockMap);
+        geneTreeWriteBlock(readSheetData,0,rowDatas.size() - 1, rowDatas, null, writeBlockMap);
 
         return writeBlockMap;
     }
@@ -75,6 +77,7 @@ public class SaxWriteUtil {
     /**
      * 递归循环遍历读取的RowData，将RowData合并为一个一个的写入块
      *   如第m行是#foreach，第n行是对应的#end，那么第m~n行的代码块合并为一个FOREACH_TAG块
+     * @param readSheetData 包含全局合并单元格等信息
      * @param rowNumStart rowNum 块的开始行
      * @param rowNumEnd rowNum 块的结束行
      * @param rowDatas 原始的待写的row数据
@@ -82,7 +85,7 @@ public class SaxWriteUtil {
      * @param writeBlockMap 转换后的待写的block数据
      * @return
      */
-    public static void geneTreeWriteBlock(int rowNumStart, int rowNumEnd, Map<String, RowData> rowDatas, TagData rootTagData, Map<String, TagData> writeBlockMap){
+    public static void geneTreeWriteBlock(ReadSheetData readSheetData, int rowNumStart, int rowNumEnd, Map<String, RowData> rowDatas, TagData rootTagData, Map<String, TagData> writeBlockMap){
         if(rowNumStart < 0 || rowNumStart > rowNumEnd || rowNumEnd >= rowDatas.size()){
             return ;
         }
@@ -96,39 +99,34 @@ public class SaxWriteUtil {
                 // 递归时，若为递归父标签的结束标签，则跳出
                 break;
             }
-            TagData tagData = null;
             TagEnum tagEnum = TagUtil.getTagEnum(rowData);
+            TagData tagData = TagUtil.getTagData(tagEnum);
 
             int curRowEndNum = -1;
             switch (tagEnum){
                 case IF_TAG:
-                    tagData = new IfTagData();
-                    tagData.setValue(getFirstCellValueStr(rowData));
-
-                    curRowEndNum = TagUtil.getTagEndNum(curRowNum + 1, rowNumEnd, rowDatas);
-                    geneTreeWriteBlock(curRowNum + 1, curRowEndNum, rowDatas, tagData, writeBlockMap);
-                    curRowNum = curRowEndNum;
-                    break;
                 case FOREACH_TAG:
-                    tagData = new ForeachTagData();
-                    tagData.setValue(getFirstCellValueStr(rowData));
-                    curRowEndNum = TagUtil.getTagEndNum(curRowNum + 1, rowNumEnd, rowDatas);
-                    geneTreeWriteBlock(curRowNum + 1, curRowEndNum, rowDatas, tagData, writeBlockMap);
-                    curRowNum = curRowEndNum;
-                    break;
                 case BIGFOREACH_TAG:
-                    tagData = new PageForeachTagData();
                     tagData.setValue(getFirstCellValueStr(rowData));
                     curRowEndNum = TagUtil.getTagEndNum(curRowNum + 1, rowNumEnd, rowDatas);
-                    geneTreeWriteBlock(curRowNum + 1, curRowEndNum, rowDatas, tagData, writeBlockMap);
+                    geneTreeWriteBlock(readSheetData, curRowNum + 1, curRowEndNum, rowDatas, tagData, writeBlockMap);
                     curRowNum = curRowEndNum;
                     break;
                 case EACH_TAG:
-                    tagData = new EachTagData(rowData);
-                    tagData.setValue(getFirstCellValueStr(rowData)); break;
+                    ((EachTagData) tagData).setReadRowData(rowData);
+                    tagData.setValue(getFirstCellValueStr(rowData));
+                    break;
                 case CONST_TAG:
+                    curRowEndNum = TagUtil.getConstTagEndNum(curRowNum + 1, rowNumEnd, rowDatas);
+                    List<RowData> constRowDatas = new ArrayList(curRowEndNum - curRowNum);
+                    for (int i = curRowNum; i<= curRowEndNum; i++){
+                        constRowDatas.add(rowDatas.get(String.valueOf(i)));
+                    }
+                    ((ConstTagData) tagData).setReadRowData(constRowDatas);
+                    curRowNum = curRowEndNum;
+                    break;
                 default:
-                    tagData = new ConstTagData(Arrays.asList(rowData)); break;
+                    throw new PoiExpandException("不支持的标签格式");
             }
 
             if(null == rootTagData){

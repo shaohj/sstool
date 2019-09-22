@@ -1,6 +1,7 @@
 package com.github.shaohj.sstool.poiexpand.common.bean.read;
 
 import lombok.Data;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.Map;
 
@@ -23,7 +24,10 @@ public class ReadSheetData {
     /** 列宽度 */
     private int[] cellWidths;
 
-    /** 读取sheet对应的行数据 */
+    /** 读取sheet模板对应的行数据 */
     private Map<String, RowData> rowDatas;
+
+    /** 读取sheet模板对应的所有合并单元格 */
+    Map<String, CellRangeAddress> allCellRangeAddress;
 
 }

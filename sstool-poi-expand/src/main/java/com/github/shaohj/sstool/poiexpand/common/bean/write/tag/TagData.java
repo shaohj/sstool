@@ -1,5 +1,6 @@
 package com.github.shaohj.sstool.poiexpand.common.bean.write.tag;
 
+import com.github.shaohj.sstool.poiexpand.common.bean.write.MergeRegionParam;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import lombok.Data;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -22,6 +23,9 @@ public abstract class TagData {
 
     /** 表达式值，常量为常量，表达式如#pageforeach detail in ${list}等 */
     protected Object value;
+
+    /** 写入sheet对应的所有合并单元格区域参数,要求是合并单元格必须再每个写入块tagdata中，此逻辑先不作验证，配置模板时注意下就可以了 */
+    protected Map<String, MergeRegionParam> allCellRangeAddress;
 
     /** 标签块中还有标签块，如if标签块中嵌套多层块 */
     protected List<TagData> childTagDatas = new ArrayList<>(4);

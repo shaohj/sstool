@@ -211,4 +211,53 @@ public class Sax07ExcelUtilTest {
         });
     }
 
+    @Test
+    public void exportPageForeachMergeTest(){
+        int num = 4;
+        CostTimeUtil.apply(null, "导出" + num + "条数据,耗费时间为{}毫秒", s -> {
+            int pageSize = 10;
+            int totalPageNum = num % pageSize == 0 ? num/pageSize : num/pageSize + 1;
+
+            String tempPath = "xlsx/";
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("printDate", "2019-01-31");
+
+            ModelTest model = new ModelTest("aaa1", "bbb", 123.234);
+            model.setYear("1992");
+            params.put("model", model);
+
+            Sax07ExcelPageWriteService sax07ExcelPageWriteService = new Sax07ExcelPageWriteService(){
+                @Override
+                public void pageWriteData() {
+                    for (int i = 0; i <totalPageNum; i++) {
+                        Map<String, Object> pageParams = new HashMap<>();
+                        List details = new ArrayList(pageSize);
+                        for (int j = 0; j <pageSize && pageSize * i + j < num; j++) {
+                            details.add(new ModelTest("user" + j, "world", 144.342));
+                        }
+                        pageParams.put("list", details);
+                        tagData.writeTagData(writeWb, writeSheet, writeSheetData, pageParams, writeCellStyleCache);
+                    }
+                }
+            };
+            //设置sax07ExcelPageWriteService对应的表达式
+            sax07ExcelPageWriteService.setExprVal("#pageforeach detail in ${list}");
+
+            try (FileOutputStream fos = new FileOutputStream(exportPath + "pageforeach_merge_data.xlsx");){
+                Sax07ExcelExportParam param = Sax07ExcelExportParam.builder()
+                        .tempIsClassPath(true)
+                        .tempFileName(tempPath + "pageforeach_merge_temp.xlsx")
+                        .params(params)
+                        .rowAccessWindowSize(1000)
+                        .sax07ExcelPageWriteServices(Arrays.asList(sax07ExcelPageWriteService))
+                        .outputStream(fos).build();
+
+                Sax07ExcelUtil.export(param);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 }

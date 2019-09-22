@@ -38,7 +38,7 @@ public class SaxWriteUtilTest {
         List<ReadSheetData> readReadSheetData = JSONArray.parseArray(readReadSheetDataStr, ReadSheetData.class);
 
         Map<String, RowData> rowDatas = readReadSheetData.get(0).getRowDatas();
-        Map<String, TagData> writeBlocks = SaxWriteUtil.parseRowData(rowDatas);
+        Map<String, TagData> writeBlocks = SaxWriteUtil.parseRowData(readReadSheetData.get(0), rowDatas);
         log.info("writeBlocks.result=\n-->\n{}", JSON.toJSONString(writeBlocks));
     }
 }
