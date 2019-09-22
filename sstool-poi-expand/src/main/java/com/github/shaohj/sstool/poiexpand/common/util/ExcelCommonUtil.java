@@ -1,5 +1,10 @@
 package com.github.shaohj.sstool.poiexpand.common.util;
 
+import com.github.shaohj.sstool.core.util.MapUtil;
+import com.github.shaohj.sstool.core.util.StrUtil;
+import com.github.shaohj.sstool.poiexpand.common.bean.write.MergeRegionParam;
+import com.github.shaohj.sstool.poiexpand.common.consts.SaxExcelConst;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -11,6 +16,8 @@ import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTMergeCells;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorksheet;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 编  号：
@@ -19,6 +26,7 @@ import java.util.Date;
  * 完成日期：2019/6/19 23:53
  * @author：felix.shao
  */
+@Slf4j
 public class ExcelCommonUtil {
 
     /**
@@ -93,6 +101,14 @@ public class ExcelCommonUtil {
         }
     }
 
+    /**
+     * 定制化的合并单元格优化
+     * 对比原有合并单元格，去掉了验证逻辑和返回值
+     * @param sxssfWorkbok
+     * @param sheetName
+     * @param region
+     * @param mergeCellsCount
+     */
     public static void addMergeRegion(SXSSFWorkbook sxssfWorkbok, String sheetName, CellRangeAddress region, int mergeCellsCount) {
         XSSFSheet sheet = sxssfWorkbok.getXSSFWorkbook().getSheet(sheetName);
         CTWorksheet ctWorksheet = sheet.getCTWorksheet();
@@ -101,6 +117,45 @@ public class ExcelCommonUtil {
         CTMergeCell ctMergeCell = ctMergeCells.addNewMergeCell();
 
         ctMergeCell.setRef(region.formatAsString());
+    }
+
+    /**
+     * 获取动态设置的合并单元格参数
+     * @param rowData eq:#each ${model} mergeRegion=0,1,0,2|0,1,2,4  即第1行第1和2列合并，第1行第3和4列合并，多个用|隔开
+     * @return MergeRegionParam
+     */
+    public static Map<String, MergeRegionParam> getMergeRegionParam(String rowData){
+        if(StrUtil.isEmpty(rowData)){
+            return new HashMap<>(0);
+        }
+        int idx = rowData.lastIndexOf(SaxExcelConst.MERGE_REGION_OPT);
+        if(idx < 0){
+            return new HashMap<>(0);
+        }
+        String params = rowData.substring(idx + SaxExcelConst.MERGE_REGION_OPT.length());
+        if(StrUtil.isEmpty(params)){
+            return new HashMap<>(0);
+        }
+        String[] mRegionParams = params.split("[|]");
+
+        Map<String, MergeRegionParam> result = new HashMap<>(MapUtil.calMapSize(mRegionParams.length));
+
+        for (int i = 0; i < mRegionParams.length; i++ ){
+            String[] mrTemp = mRegionParams[i].split(",");
+            if(4 != mrTemp.length){
+                log.warn("mergeRegion param config error, ignore the str = {}", mRegionParams[i]);
+            } else {
+                MergeRegionParam mrParam = new MergeRegionParam();
+                mrParam.setRelaStartRow(Integer.parseInt(mrTemp[0]));
+                mrParam.setRelaEndRow(Integer.parseInt(mrTemp[1]));
+                mrParam.setStartCol(Integer.parseInt(mrTemp[2]));
+                mrParam.setEndCol(Integer.parseInt(mrTemp[3]));
+
+                result.put("dy_" + i , mrParam);
+            }
+        }
+
+        return result;
     }
 
 }

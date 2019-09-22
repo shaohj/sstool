@@ -60,9 +60,13 @@ public class EachTagData extends TagData{
     @Override
     public void writeTagData(Workbook writeWb, SXSSFSheet writeSheet, WriteSheetData writeSheetData,
                              Map<String, Object> params, Map<String, CellStyle> writeCellStyleCache) {
+        int curWriteRowNum = writeSheetData.getCurWriteRowNum();
+
         initExpr();
         initReadRowData(params);
         TagUtil.writeTagData(writeWb, writeSheet, writeSheetData, Arrays.asList(readRowData), params, writeCellStyleCache);
+
+        TagUtil.writeTagMergeRegion(allCellRangeAddress, curWriteRowNum, writeWb, writeSheet, writeSheetData);
     }
 
     /**

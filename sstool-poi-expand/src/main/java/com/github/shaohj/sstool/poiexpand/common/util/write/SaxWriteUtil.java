@@ -114,10 +114,16 @@ public class SaxWriteUtil {
                     tagData.setValue(getFirstCellValueStr(rowData));
                     curRowEndNum = TagUtil.getTagEndNum(curRowNum + 1, rowNumEnd, rowDatas);
                     geneTreeWriteBlock(readSheetData, curRowNum + 1, curRowEndNum, rowDatas, tagData, writeBlockMap);
+                    // 动态的合并单元格处理
+                    tagData.setAllCellRangeAddress(ExcelCommonUtil.getMergeRegionParam(getFirstCellValueStr(rowData)));
+
                     curRowNum = curRowEndNum;
                     break;
                 case EACH_TAG:
                     ((EachTagData) tagData).setReadRowData(rowData);
+
+                    // 动态的合并单元格处理
+                    tagData.setAllCellRangeAddress(ExcelCommonUtil.getMergeRegionParam(getFirstCellValueStr(rowData)));
                     tagData.setValue(getFirstCellValueStr(rowData));
                     break;
                 case CONST_TAG:

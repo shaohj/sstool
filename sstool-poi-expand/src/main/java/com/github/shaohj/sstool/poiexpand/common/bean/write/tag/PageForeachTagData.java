@@ -1,10 +1,11 @@
 package com.github.shaohj.sstool.poiexpand.common.bean.write.tag;
 
+import com.github.shaohj.sstool.core.util.ExprUtil;
 import com.github.shaohj.sstool.core.util.StrUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.consts.SaxExcelConst;
 import com.github.shaohj.sstool.poiexpand.common.consts.TagEnum;
-import com.github.shaohj.sstool.core.util.ExprUtil;
+import com.github.shaohj.sstool.poiexpand.common.util.write.TagUtil;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
@@ -59,7 +60,9 @@ public class PageForeachTagData extends TagData {
             Object iteratorObj = iterator.next();
             params.put(iteratorObjKey, iteratorObj);
             childTagDatas.stream().forEach(childTagData -> {
+                int curWriteRowNum = writeSheetData.getCurWriteRowNum();
                 childTagData.writeTagData(writeWb, writeSheet, writeSheetData, params, writeCellStyleCache);
+                TagUtil.writeTagMergeRegion(allCellRangeAddress, curWriteRowNum, writeWb, writeSheet, writeSheetData);
             });
         }
     }

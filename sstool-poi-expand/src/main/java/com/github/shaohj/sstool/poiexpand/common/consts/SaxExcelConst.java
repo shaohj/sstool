@@ -18,4 +18,6 @@ public interface SaxExcelConst {
 
     String TAG_KEY = "#";
 
+    String MERGE_REGION_OPT = "mergeRegion=";
+
 }
