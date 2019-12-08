@@ -20,4 +20,6 @@ public interface SaxExcelConst {
 
     String MERGE_REGION_OPT = "mergeRegion=";
 
+    String FORMULA_KEY = "formula=";
+
 }

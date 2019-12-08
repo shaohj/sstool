@@ -47,6 +47,9 @@ public class Sax07ExcelUtil {
         SXSSFWorkbook writeWb = new SXSSFWorkbook(rowAccessWindowSize);
 
         try {
+            // 支持公式
+            writeWb.setForceFormulaRecalculation(true);
+
             Sax07ExcelTemplateWriter.writeSheetData(writeWb, param.getParams(), writeSheetDatas, param.getSax07ExcelPageWriteServices());
             //输出文件
             writeWb.write(param.getOutputStream());

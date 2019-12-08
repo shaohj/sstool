@@ -71,7 +71,7 @@ public class ExcelCommonUtil {
             case BOOLEAN:
                 result = cell.getBooleanCellValue(); break;
             case FORMULA:
-                result = cell.getCellFormula(); break;
+                result = "formula=" + cell.getCellFormula(); break;
             case NUMERIC:
                 result = cell.getNumericCellValue(); break;
             case STRING:
@@ -94,7 +94,14 @@ public class ExcelCommonUtil {
             } else if ("java.lang.Boolean".equals(value.getClass().getName())) {
                 writeCell.setCellValue(((Boolean) value).booleanValue());
             } else if ("java.lang.String".equals(value.getClass().getName())) {
-                writeCell.setCellValue(value.toString());
+                int formulaIndex = value.toString().indexOf(SaxExcelConst.FORMULA_KEY);
+                //  formulaIndex为0时,表示string为读取后处理后的公式数据或自定义的公式数据
+                if(0 != formulaIndex){
+                    writeCell.setCellValue(value.toString());
+                } else {
+                    // String如果是公式,则设置公式值
+                    writeCell.setCellFormula(value.toString().substring(SaxExcelConst.FORMULA_KEY.length()));
+                }
             } else {
                 writeCell.setCellValue(value.toString());
             }
