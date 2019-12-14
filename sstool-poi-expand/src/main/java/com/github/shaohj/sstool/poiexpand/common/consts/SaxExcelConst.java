@@ -22,4 +22,6 @@ public interface SaxExcelConst {
 
     String FORMULA_KEY = "formula=";
 
+    String FORMULA_THIS_ROW = "thisRow";
+
 }

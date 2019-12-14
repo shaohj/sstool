@@ -182,33 +182,37 @@ public class SaxWriteUtil {
      *   foreach和bigforeach标签在写入样式时，使用了缓存的样式，避免创建很多相同的样式导致excel文件过大
      * @param writeWb
      * @param writeRow
+     * @param currentWriteRow
      * @param readRowNum
      * @param cellData
      * @param params java动态参数
      * @param writeCellStyleCache 样式缓存
      */
-    public static void writeCellData(Workbook writeWb, Row writeRow, int readRowNum, CellData cellData,
+    public static void writeCellData(Workbook writeWb, Row writeRow, int currentWriteRow, int readRowNum, CellData cellData,
                                      Map<String, Object> params, Map<String, CellStyle> writeCellStyleCache){
         Cell writeCell = writeRow.createCell(cellData.getColNum());
 
-        String cellStyleKey = readRowNum + "_" + cellData.getColNum();
-        CellStyle cellStyle = null;
-        if(null != writeCellStyleCache.get(cellStyleKey)){
-            cellStyle = writeCellStyleCache.get(cellStyleKey);
-            writeCell.setCellStyle(cellStyle);
-            writeCell.setCellType(cellData.getCellType());
-        } else {
-            if(null != cellData.getCellStyle()){
-                cellStyle = writeWb.createCellStyle();
-                cellStyle.cloneStyleFrom(cellData.getCellStyle());
-                writeCellStyleCache.put(cellStyleKey, cellStyle);
+        // 设置样式
+        if(null != cellData.getCellStyle()){
+            String cellStyleKey = String.valueOf(cellData.getCellStyle().getIndex());
+            CellStyle cellStyle = null;
+            if(null != writeCellStyleCache.get(cellStyleKey)){
+                cellStyle = writeCellStyleCache.get(cellStyleKey);
                 writeCell.setCellStyle(cellStyle);
                 writeCell.setCellType(cellData.getCellType());
+            } else {
+                if(null != cellData.getCellStyle()){
+                    cellStyle = writeWb.createCellStyle();
+                    cellStyle.cloneStyleFrom(cellData.getCellStyle());
+                    writeCellStyleCache.put(cellStyleKey, cellStyle);
+                    writeCell.setCellStyle(cellStyle);
+                    writeCell.setCellType(cellData.getCellType());
+                }
             }
         }
 
         Object parseValue = ExprUtil.parseTempStr(params, cellData.getValue());
-        ExcelCommonUtil.setCellValue(writeCell, parseValue);
+        ExcelCommonUtil.setCellValue(writeCell, parseValue, currentWriteRow);
     }
 
 }

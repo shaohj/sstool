@@ -117,13 +117,14 @@ public class TagUtil {
     public static void writeTagData(Workbook writeWb, SXSSFSheet writeSheet, WriteSheetData writeSheetData,
                                     List<RowData> readRowData, Map<String, Object> params, Map<String, CellStyle> writeCellStyleCache){
         readRowData.stream().forEach(rowData -> {
-            final Row writeRow = writeSheet.createRow(writeSheetData.getCurWriteRowNumAndIncrement());
+            int curWriteRow = writeSheetData.getCurWriteRowNumAndIncrement();
+            final Row writeRow = writeSheet.createRow(curWriteRow);
             writeRow.setHeight(rowData.getHeight());
             writeRow.setHeightInPoints(rowData.getHeightInPoints());
             if(MapUtil.isEmpty(rowData.getCellDatas())){
                 return;
             }
-            rowData.getCellDatas().forEach((readCellNum, cellData) -> SaxWriteUtil.writeCellData(writeWb, writeRow, rowData.getRowNum(), cellData, params, writeCellStyleCache));
+            rowData.getCellDatas().forEach((readCellNum, cellData) -> SaxWriteUtil.writeCellData(writeWb, writeRow, curWriteRow, rowData.getRowNum(), cellData, params, writeCellStyleCache));
         });
     }
 

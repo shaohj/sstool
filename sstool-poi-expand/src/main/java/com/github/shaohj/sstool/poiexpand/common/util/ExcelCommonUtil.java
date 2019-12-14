@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.shaohj.sstool.poiexpand.common.consts.SaxExcelConst.FORMULA_KEY;
+
 /**
  * 编  号：
  * 名  称：ExcelCommonUtil
@@ -71,7 +73,7 @@ public class ExcelCommonUtil {
             case BOOLEAN:
                 result = cell.getBooleanCellValue(); break;
             case FORMULA:
-                result = "formula=" + cell.getCellFormula(); break;
+                result = FORMULA_KEY + cell.getCellFormula(); break;
             case NUMERIC:
                 result = cell.getNumericCellValue(); break;
             case STRING:
@@ -81,7 +83,7 @@ public class ExcelCommonUtil {
         return result;
     }
 
-    public static void setCellValue(Cell writeCell, Object value){
+    public static void setCellValue(Cell writeCell, Object value, int currentWriteRow){
         if(null == value){
             writeCell.setCellValue("");
         } else {
@@ -94,13 +96,18 @@ public class ExcelCommonUtil {
             } else if ("java.lang.Boolean".equals(value.getClass().getName())) {
                 writeCell.setCellValue(((Boolean) value).booleanValue());
             } else if ("java.lang.String".equals(value.getClass().getName())) {
-                int formulaIndex = value.toString().indexOf(SaxExcelConst.FORMULA_KEY);
+                int formulaIndex = value.toString().indexOf(FORMULA_KEY);
                 //  formulaIndex为0时,表示string为读取后处理后的公式数据或自定义的公式数据
                 if(0 != formulaIndex){
                     writeCell.setCellValue(value.toString());
                 } else {
+                    String formulaValue = value.toString();
+                    formulaValue = formulaValue.substring(FORMULA_KEY.length());
+                    // 当前写入行号,后续考虑兼容基于该行号相对配置其他行号功能
+                    int actualCurrentWriteRow = currentWriteRow + 1;
+                    formulaValue = formulaValue.replaceAll(SaxExcelConst.FORMULA_THIS_ROW, String.valueOf(actualCurrentWriteRow));
                     // String如果是公式,则设置公式值
-                    writeCell.setCellFormula(value.toString().substring(SaxExcelConst.FORMULA_KEY.length()));
+                    writeCell.setCellFormula(formulaValue);
                 }
             } else {
                 writeCell.setCellValue(value.toString());

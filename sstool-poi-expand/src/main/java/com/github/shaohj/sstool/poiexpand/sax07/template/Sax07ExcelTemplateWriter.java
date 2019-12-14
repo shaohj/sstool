@@ -5,6 +5,7 @@ import com.github.shaohj.sstool.core.util.MapUtil;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.WriteSheetData;
 import com.github.shaohj.sstool.poiexpand.common.bean.write.tag.PageForeachTagData;
 import com.github.shaohj.sstool.poiexpand.sax07.service.Sax07ExcelPageWriteService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -20,6 +21,7 @@ import java.util.Map;
  * 完成日期：2019/6/29 11:12
  * @author：felix.shao
  */
+@Slf4j
 public class Sax07ExcelTemplateWriter {
 
     /**
@@ -33,6 +35,9 @@ public class Sax07ExcelTemplateWriter {
         if(EmptyUtil.isEmpty(writeSheetDatas)){
             return;
         }
+        // 样式需要做缓存特殊处理，以Workbook为单位作缓存处理，定义在此保证线程安全
+        final Map<String, CellStyle> writeCellStyleCache = new HashMap<>();
+
         writeSheetDatas.stream().forEach(writeSheetData -> {
             //创建sheet
             SXSSFSheet writeSheet =  writeWb.createSheet(writeSheetData.getSheetName());
@@ -47,8 +52,6 @@ public class Sax07ExcelTemplateWriter {
             if(MapUtil.isEmpty(writeSheetData.getWriteTagDatas())){
                 return;
             }
-            // 样式需要做缓存特殊处理，以sheet为单位作缓存处理，定义在此保证线程安全
-            final Map<String, CellStyle> writeCellStyleCache = new HashMap<>();
             writeSheetData.getWriteTagDatas().forEach((readRowNum, tagData) -> {
                 if(tagData instanceof PageForeachTagData){
                     // 大数据导出service
@@ -65,6 +68,8 @@ public class Sax07ExcelTemplateWriter {
                 }
             });
         });
+
+        log.info("writeCellStyleCache.size = {}", writeCellStyleCache.size());
     }
 
 }
